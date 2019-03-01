@@ -26,7 +26,7 @@
             );
         }
      
-        function getType(){ return 'formatting'; }
+        function getType(){ return 'container'; }
         function getPType(){ return 'stack'; }
         function getAllowedTypes() { return array('formatting', 'substition', 'disabled', 'protected', 'container', 'paragraphs' ); }   
         function getSort(){ return 168; }
