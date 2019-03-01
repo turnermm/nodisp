@@ -12,15 +12,18 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
        $controller->register_hook('TPL_CONTENT_DISPLAY', 'BEFORE', $this, 'handle_wiki_content'); 	    
     }
 
-
-  function handle_wiki_content(Doku_Event $event, $param) {  
-     global $ACT,$ID;
-	 msg($ID);
-	 $acl = auth_quickaclcheck($ID);
-	 msg($acl);
-     if($this->getConf('conceal')) {
-     $event->data = preg_replace('#\<em\s+class=(\"|\')u(\1)\>\s*BROKEN\-LINK\:(.*?)LINK\-BROKEN\s*</em>#',"$3",$event->data);
-     }
+  function handle_wiki_content(Doku_Event $event, $param) {    
+     $event->data = preg_replace_callback( 
+        '|\<div class\s+=\s+"nodisp_(\d+)">.*?\<\/div>|ms',
+        function($matches) {     
+           global $ID;
+           $acl = auth_quickaclcheck($ID);
+           if($acl < $matches[1]) {
+               return "";
+           }          
+           return $matches[0];
+        },$event->data
+     ) ;
    }
 
  }

@@ -40,9 +40,21 @@
         function handle($match, $state, $pos, Doku_Handler $handler){
 
 
+/*
+ none   0
+ read   1
+ edit   2
+ create 4
+ upload 8
+ delete 16
+*/
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-               return array($state, false);
+              if(preg_match("/(\d+)/",$match,$matches) ){
+                  $level = "nodisp_" . $matches[1];
+                   return array($state,"<div class = \"$level\">");
+              }
+               return array($state, "<div style='display:none'>");
      
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
               case DOKU_LEXER_EXIT :       return array($state, '');
@@ -61,13 +73,12 @@
                 list($state, $match) = $data;
                 switch ($state) {
                   case DOKU_LEXER_ENTER :  
-                 //   if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
-                    $renderer->doc .= "<div style='display:none'>"; 
+                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;   				
+			   	       $renderer->doc .= $match;                  
                     break;
-     
                   case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
                   case DOKU_LEXER_EXIT : 
-               //     if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
+                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
                     $renderer->doc .= "</div>"; break;
                 }
                 return true;
