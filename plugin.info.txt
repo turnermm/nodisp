@@ -1,7 +1,7 @@
 base   nodisp
 author Myron Turner
 email  turnermm02@shaw.ca
-date   2019-03-01
+date   2019-03-02
 name   nodisp
 desc   Hide text from brwosoer display or remove from output to browser depending on acl
 url    https://www.dokuwiki.org/plugin:nodisp
