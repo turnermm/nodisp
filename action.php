@@ -28,8 +28,8 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
           return;
       }
         
-     $event->data = preg_replace_callback( 
-        '|\<div class\s+=\s+"nodisp_(\d+)">.*?\<\/div>|ms',
+     $event->data = preg_replace_callback(    
+     '|<div class = "nodisp_(\d+)"><!-- nodisp -->(.*?)<!-- nodisp -->'."\n" . '<div>|ms',
         function($matches) {     
            global $ID;
            $acl = auth_quickaclcheck($ID);

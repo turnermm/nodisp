@@ -52,9 +52,9 @@
               case DOKU_LEXER_ENTER : 
               if(preg_match("/(\d+)/",$match,$matches) ){
                   $level = "nodisp_" . $matches[1];
-                   return array($state,"<div class = \"$level\">");
+                   return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
               }
-               return array($state, "<div style='display:none'>");
+               return array($state, "<div style='display:none'><!-- nodisp -->\n");
      
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
               case DOKU_LEXER_EXIT :       return array($state, '');
@@ -79,7 +79,7 @@
                   case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
                   case DOKU_LEXER_EXIT : 
                        if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
-                    $renderer->doc .= "</div>"; break;
+                    $renderer->doc .= "<!-- nodisp -->\n<div>"; break;
                 }
                 return true;
             }
