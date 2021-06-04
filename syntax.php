@@ -1,17 +1,17 @@
 <?php
-         
+
     // must be run within DokuWiki
     if(!defined('DOKU_INC')) die();
-     
+
     if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
     require_once(DOKU_PLUGIN.'syntax.php');
-     
+
     /**
      * All DokuWiki plugins to extend the parser/rendering mechanism
      * need to inherit from this class
      */
     class syntax_plugin_nodisp extends DokuWiki_Syntax_Plugin {
-     
+
         /**
          * return some info
          */
@@ -25,15 +25,15 @@
                 'url'    => 'http://www.mturner.org',
             );
         }
-     
+
         function getType(){ return 'container'; }
         function getPType(){ return 'stack'; }
-        function getAllowedTypes() { return array('formatting', 'substition', 'disabled', 'protected', 'container', 'paragraphs' ); }   
+        function getAllowedTypes() { return array('formatting', 'substition', 'disabled', 'protected', 'container', 'paragraphs' ); }
         function getSort(){ return 168; }
         function connectTo($mode) { $this->Lexer->addEntryPattern('<nodisp.*?>(?=.*?</nodisp>)',$mode,'plugin_nodisp'); }
         function postConnect() { $this->Lexer->addExitPattern('</nodisp>','plugin_nodisp'); }
-     
-     
+
+
         /**
          * Handle the match
          */
@@ -49,20 +49,20 @@
  delete 16
 */
             switch ($state) {
-              case DOKU_LEXER_ENTER : 
+              case DOKU_LEXER_ENTER :
               if(preg_match("/(\d+)/",$match,$matches) ){
                   $level = "nodisp_" . $matches[1];
                    return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
               }
                return array($state, "<div style='display:none'><!-- nodisp -->\n");
-     
+
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
               case DOKU_LEXER_EXIT :       return array($state, '');
             }
-       
+
             return array();
         }
-     
+
         /**
          * Create output
          */
@@ -72,13 +72,13 @@
                 $renderer->nocache(); // disable caching
                 list($state, $match) = $data;
                 switch ($state) {
-                  case DOKU_LEXER_ENTER :  
-                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;   				
-			   	       $renderer->doc .= $match;                  
+                  case DOKU_LEXER_ENTER :
+                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;
+			   	       $renderer->doc .= $match;
                     break;
                   case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
-                  case DOKU_LEXER_EXIT : 
-                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
+                  case DOKU_LEXER_EXIT :
+                       if($INFO['isadmin'] || $INFO['ismanager'] ) break;
                     $renderer->doc .= "<!-- nodisp -->\n</div>";
                     break;
                 }
@@ -86,7 +86,7 @@
             }
             return false;
         }
-     
+
 
 
 }
