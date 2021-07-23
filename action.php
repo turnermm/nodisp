@@ -25,6 +25,18 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
                return $matches[0];
             },$event->data
          ) ;
+         
+         $event->data = preg_replace_callback( 
+            '|\{nodisp (\d+)\}.*?\{\/nodisp\}|ms',
+            function($matches) {     
+               global $ID;
+               $acl = auth_quickaclcheck($ID);
+               if($acl < $matches[1]) {
+                   return "";
+               }          
+               return $matches[0];
+            },$event->data
+         ) ;
           return;
       }
         
