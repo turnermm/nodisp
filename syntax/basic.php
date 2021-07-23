@@ -12,23 +12,14 @@
      */
     class syntax_plugin_nodisp_basic extends DokuWiki_Syntax_Plugin {
     
- //   protected  $p_type = 'normal';
-
-    
         function getType(){ return 'container'; }
-    
         function getAllowedTypes() { return array('formatting', 'substition', 'disabled', 'protected', 'container', 'paragraphs' ); }   
         function getSort(){ return 168; }
 
-     
-     
-     
         /**
          * Handle the match
          */
         function handle($match, $state, $pos, Doku_Handler $handler){
-
-
 /*
  none   0
  read   1
