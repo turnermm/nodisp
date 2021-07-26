@@ -59,7 +59,7 @@
                   case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
                   case DOKU_LEXER_EXIT : 
                        if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
-                    $renderer->doc .= "<!-- nodisp -->\n</div>";
+                    $renderer->doc .= "<!-- nodisp --></div>";
                     break;
                 }
                 return true;
