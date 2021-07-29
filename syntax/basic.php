@@ -10,36 +10,16 @@
      * All DokuWiki plugins to extend the parser/rendering mechanism
      * need to inherit from this class
      */
-    class syntax_plugin_nodisp extends DokuWiki_Syntax_Plugin {
-     
-        /**
-         * return some info
-         */
-        function getInfo(){
-            return array(
-                'author' => 'Myron Turner',
-                'email'  => 'turnermm02 AT shaw DOT ca',
-                'date'   => '2016-01-16',
-                'name'   => 'nodisp Plugin',
-                'desc'   => 'hides display of enclosed text',
-                'url'    => 'http://www.mturner.org',
-            );
-        }
-     
+    class syntax_plugin_nodisp_basic extends DokuWiki_Syntax_Plugin {
+    
         function getType(){ return 'container'; }
-        function getPType(){ return 'stack'; }
         function getAllowedTypes() { return array('formatting', 'substition', 'disabled', 'protected', 'container', 'paragraphs' ); }   
         function getSort(){ return 168; }
-        function connectTo($mode) { $this->Lexer->addEntryPattern('<nodisp.*?>(?=.*?</nodisp>)',$mode,'plugin_nodisp'); }
-        function postConnect() { $this->Lexer->addExitPattern('</nodisp>','plugin_nodisp'); }
-     
-     
+
         /**
          * Handle the match
          */
         function handle($match, $state, $pos, Doku_Handler $handler){
-
-
 /*
  none   0
  read   1
@@ -50,14 +30,14 @@
 */
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-              if(preg_match("/(\d+)/",$match,$matches) ){
-                  $level = "nodisp_" . $matches[1];
-                   return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
-              }
-               return array($state, "<div style='display:none'><!-- nodisp -->\n");
+                  if(preg_match("/(\d+)/",$match,$matches) ){
+                      $level = "nodisp_" . $matches[1];
+                       return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
+                  }
+                   return array($state, "<div style='display:none'><!-- nodisp -->\n");     
      
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
-              case DOKU_LEXER_EXIT :       return array($state, '');
+              case DOKU_LEXER_EXIT :   return array($state, '');
             }
        
             return array();
@@ -79,7 +59,7 @@
                   case DOKU_LEXER_UNMATCHED :  $renderer->doc .= $renderer->_xmlEntities($match); break;
                   case DOKU_LEXER_EXIT : 
                        if($INFO['isadmin'] || $INFO['ismanager'] ) break;   
-                    $renderer->doc .= "<!-- nodisp -->\n</div>";
+                    $renderer->doc .= "<!-- nodisp --></div>";
                     break;
                 }
                 return true;
