@@ -34,6 +34,20 @@
                       $level = "nodisp_" . $matches[1];
                        return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
                   }
+                  else {
+                       global $INFO;
+                      list($nodisp, $group) =  preg_split("/\s+/",$match);
+                      if($group) {
+                          $group = substr($group, 0, -1);
+                            $user_groups = $INFO['userinfo']['grps'];
+                           // msg(htmlentities(print_r($user_groups,true)) . '</pre>');
+                            if($user_groups && is_array($user_groups)) {
+                                if(in_array($group,$user_groups)) {
+                                    return array($state,"<div class = \"group\"><!-- nodisp -->\n");
+                                }
+                            }                         
+                      }                          
+                  }    
                    return array($state, "<div style='display:none'><!-- nodisp -->\n");     
      
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
