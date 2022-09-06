@@ -30,26 +30,20 @@
 */
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-                  if(preg_match("/(\d+)/",$match,$matches) ){
+              if(preg_match("/\s(\w+|\d+)/",$match,$matches) ){
+                  if(is_numeric($matches[1])) {
                       $level = "nodisp_" . $matches[1];
-                       return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
                   }
                   else {
-                       global $INFO;
-                      list($nodisp, $group) =  preg_split("/\s+/",$match);
-                      if($group) {
-                          $group = substr($group, 0, -1);
-                            $user_groups = $INFO['userinfo']['grps'];
-                           // msg(htmlentities(print_r($user_groups,true)) . '</pre>');
-                            if($user_groups && is_array($user_groups)) {
-                                if(in_array($group,$user_groups)) {
-                                    return array($state,"<div class = \"group\"><!-- nodisp -->\n");
-                                }
-                            }                         
+                      $level = "nodisp_16";
+                      $tlevel = $this->getGroupLevel($match); 
+ 
+                     
+                       return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
                       }                          
-                  }    
+                  
                    return array($state, "<div style='display:none'><!-- nodisp -->\n");     
-     
+                  }    
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
               case DOKU_LEXER_EXIT :   return array($state, '');
             }
@@ -81,6 +75,19 @@
             return false;
         }
      
+        function getGroupLevel($match) {
+            global $INFO;
+           // msg("tlevel = " .htmlentities($match),1);
+            $match = trim($match,'{,},<,>');
+            $match = preg_replace("/\s+/",';',$match);
+            list($nodisp,$group) = explode(';',$match);
+           // $group=htmlentities($group);
+            msg(">>".$group."<<",1);
+            
 
+            $user_groups = $INFO['userinfo']['grps'];
+            if($user_groups && is_array($user_groups)) {
+            }
+        }
 
 }
