@@ -30,20 +30,13 @@
 */
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-              if(preg_match("/\s(\w+|\d+)/",$match,$matches) ){
-                  if(is_numeric($matches[1])) {
-                      $level = "nodisp_" . $matches[1];
-                  }
-                  else {
-                      $level = "nodisp_16";
-                      $tlevel = $this->getGroupLevel($match); 
- 
-                     
+            if(preg_match("/\s(\w+|\d+)(>|\})/",$match,$matches) ){
+                      $level = "nodisp_" . $this->getLevel($matches[1]);
+                       //msg('LEVEL = ' . $level,2);
                        return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
                       }                          
-                  
                    return array($state, "<div style='display:none'><!-- nodisp -->\n");     
-                  }    
+                  
               case DOKU_LEXER_UNMATCHED :  return array($state, $match);
               case DOKU_LEXER_EXIT :   return array($state, '');
             }
@@ -75,19 +68,20 @@
             return false;
         }
      
-        function getGroupLevel($match) {
+
+        function getLevel($match) {
             global $INFO;
-           // msg("tlevel = " .htmlentities($match),1);
-            $match = trim($match,'{,},<,>');
-            $match = preg_replace("/\s+/",';',$match);
-            list($nodisp,$group) = explode(';',$match);
-           // $group=htmlentities($group);
-            msg(">>".$group."<<",1);
-            
+                   
+            if(is_numeric($match)) {
+                return $match;
+            }               
 
             $user_groups = $INFO['userinfo']['grps'];
             if($user_groups && is_array($user_groups)) {
+                if(in_array($match,$user_groups)) {                   
+                    return 16;
+                }
             }
+            return $match; 
         }
-
 }
