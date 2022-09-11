@@ -46,6 +46,30 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
                return $matches[0];
             },$event->data
          ) ;
+         
+          $event->data = preg_replace_callback( 
+            '|&lt;nodisp\s+(\w+)&gt;.*?&lt;\/nodisp&gt;|ms',
+            function($matches) {     
+               global $ID;
+               $acl = auth_quickaclcheck($ID);
+               if($acl < $matches[1]) {
+                   return "";
+               }          
+               return $matches[0];
+            },$event->data
+         ) ;  
+         
+         $event->data = preg_replace_callback( 
+            '|\{nodisp\s+(\w+)\}.*?\{\/nodisp\}|ms',
+            function($matches) {     
+               global $ID;
+               $acl = auth_quickaclcheck($ID);
+               if($acl < $this->groupLevel($matches[1])) {
+                   return "";
+               }          
+               return $matches[0];
+            },$event->data
+         ) ;
           return;
       }
         
@@ -54,7 +78,7 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
         function($matches) {     
            global $ID;
            $acl = auth_quickaclcheck($ID);
-           if($acl < $matches[1]) {
+           if($acl < $this->groupLevel($matches[1])) {
                return "";
            }          
            return $matches[0];
@@ -62,4 +86,19 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
      ) ;
    }
 
+        function groupLevel($match) {
+            global $INFO;
+                   
+            if(is_numeric($match)) {
+                return $match;
+            }               
+
+            $user_groups = $INFO['userinfo']['grps'];
+            if($user_groups && is_array($user_groups)) {
+                if(in_array($match,$user_groups)) {                   
+                    return "16";
+                }
+            }
+            return $match; 
+        }
  }
