@@ -52,7 +52,7 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
             function($matches) {     
                global $ID;
                $acl = auth_quickaclcheck($ID);
-               if($acl < $matches[1]) {
+               if($acl < $this->groupLevel($matches[1])) {
                    return "";
                }          
                return $matches[0];
@@ -74,7 +74,7 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
       }
         
      $event->data = preg_replace_callback(    
-         '|<div class = "nodisp_(\d+)"><!-- nodisp -->(.*?)<!-- nodisp -->.*?<\/div>|ms',
+         '|<div class = "nodisp_([\w\d]+)"><!-- nodisp -->(.*?)<!-- nodisp -->.*?<\/div>|ms',
         function($matches) {     
            global $ID;
            $acl = auth_quickaclcheck($ID);
@@ -92,13 +92,14 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
             if(is_numeric($match)) {
                 return $match;
             }               
-
             $user_groups = $INFO['userinfo']['grps'];
-            if($user_groups && is_array($user_groups)) {
-                if(in_array($match,$user_groups)) {                   
-                    return "16";
+            if(empty($user_groups)) return "256";
+            if(is_array($user_groups)) {
+               if(in_array($match,$user_groups)) {                   
+  		       return "1";	
                 }
             }
-            return $match; 
+            return "256";
+ 
         }
  }

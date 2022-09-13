@@ -30,9 +30,8 @@
 */
             switch ($state) {
               case DOKU_LEXER_ENTER : 
-            if(preg_match("/\s(\w+|\d+)(>|\})/",$match,$matches) ){
-                      $level = "nodisp_" . $this->getLevel($matches[1]);
-                       //msg('LEVEL = ' . $level,2);
+                if(preg_match("/nodisp\s+(\w+|\d+)(>|\})/",$match,$m) ){
+                    $level = "nodisp_" . $this->getLevel($m[1]);                     
                        return array($state,"<div class = \"$level\"><!-- nodisp -->\n");
                       }                          
                    return array($state, "<div style='display:none'><!-- nodisp -->\n");     
@@ -71,7 +70,6 @@
 
         function getLevel($match) {
             global $INFO;
-                   
             if(is_numeric($match)) {
                 return $match;
             }               
