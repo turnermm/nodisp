@@ -21,6 +21,14 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
     function evaluate_acl($level, $content) {
         global $ID;
         $acl = auth_quickaclcheck($ID);
+        /*
+         * In case the permission level is above page level (2) and the user has
+         * permissions on the namespace, we need to check against the
+         * permissions of the namespace.
+         */
+        if ($level > 2 && auth_quickaclcheck(getNS($ID)) > 2) {
+            $acl = auth_quickaclcheck(getNS($ID));
+        }
         if ($acl < $level) {
             return "";
         }
