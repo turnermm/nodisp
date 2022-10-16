@@ -18,6 +18,15 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
         }
     }
 
+    function evaluate_acl($level, $content) {
+        global $ID;
+        $acl = auth_quickaclcheck($ID);
+        if ($acl < $level) {
+            return "";
+        }
+        return $content;
+    }
+
     function handle_wiki_content(Doku_Event $event, $param) {
         global $ACT;
         $act = act_clean($ACT);
@@ -26,48 +35,30 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
             $event->data = preg_replace_callback(
                 '|&lt;nodisp (\d+)&gt;.*?&lt;\/nodisp&gt;|ms',
                 function($matches) {
-                    global $ID;
-                    $acl = auth_quickaclcheck($ID);
-                    if ($acl < $matches[1]) {
-                        return "";
-                    }
-                    return $matches[0];
+                    return $this->evaluate_acl($matches[1], $matches[0]);
                 }, $event->data
             );
 
             $event->data = preg_replace_callback(
                 '|\{nodisp (\d+)\}.*?\{\/nodisp\}|ms',
                 function($matches) {
-                    global $ID;
-                    $acl = auth_quickaclcheck($ID);
-                    if ($acl < $matches[1]) {
-                        return "";
-                    }
-                    return $matches[0];
+                    return $this->evaluate_acl($matches[1], $matches[0]);
                 }, $event->data
             );
 
             $event->data = preg_replace_callback(
                 '|&lt;nodisp\s+(\w+)&gt;.*?&lt;\/nodisp&gt;|ms',
                 function($matches) {
-                    global $ID;
-                    $acl = auth_quickaclcheck($ID);
-                    if ($acl < $this->groupLevel($matches[1])) {
-                        return "";
-                    }
-                    return $matches[0];
+                    return $this->evaluate_acl($this->groupLevel($matches[1]),
+                                               $matches[0]);
                 }, $event->data
             );
 
             $event->data = preg_replace_callback(
                 '|\{nodisp\s+(\w+)\}.*?\{\/nodisp\}|ms',
                 function($matches) {
-                    global $ID;
-                    $acl = auth_quickaclcheck($ID);
-                    if ($acl < $this->groupLevel($matches[1])) {
-                        return "";
-                    }
-                    return $matches[0];
+                    return $this->evaluate_acl($this->groupLevel($matches[1]),
+                                               $matches[0]);
                 }, $event->data
             );
 
@@ -77,12 +68,8 @@ class action_plugin_nodisp extends DokuWiki_Action_Plugin {
         $event->data = preg_replace_callback(
             '|<div class = "nodisp_([\w\d]+)"><!-- nodisp -->(.*?)<!-- nodisp -->.*?<\/div>|ms',
             function($matches) {
-                global $ID;
-                $acl = auth_quickaclcheck($ID);
-                if ($acl < $this->groupLevel($matches[1])) {
-                    return "";
-                }
-                return $matches[0];
+                return $this->evaluate_acl($this->groupLevel($matches[1]),
+                                           $matches[0]);
             }, $event->data
         );
     }
